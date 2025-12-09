@@ -12,7 +12,7 @@
         tracks.forEach(track =>
             track.notes.forEach(note => {
                 const normalized = range > 0 ? (note.velocity - minV) / range : 1;
-                note.velocity = Math.min(normalized * (targetVolume / 127), 1);
+                note.velocity = Math.min(Math.round(normalized * targetVolume), 127);
             })
         );
     }
@@ -21,14 +21,14 @@
         const scale = Math.min(volume / 127, 1);
         tracks.forEach(track =>
             track.notes.forEach(note => {
-                note.velocity = Math.min(note.velocity * scale, 1);
+                note.velocity = Math.min(Math.round(note.velocity * scale), 127);
             })
         );
     }
 
     async function processMidiFile(file, normalize, volume) {
         const arrayBuffer = await file.arrayBuffer();
-        const midi = new window.Midi(arrayBuffer);  // global Midi
+        const midi = new window.Midi(arrayBuffer);
 
         if (normalize) {
             normalizeVelocities(midi.tracks, volume);
@@ -70,7 +70,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         initMidiProcessor(document.body, () => ({
             normalize: document.getElementById('normalize').checked,
-            volume: parseInt(document.getElementById('volume').value) || 200
+            volume: parseInt(document.getElementById('volume').value) || 127
         }));
     });
 
