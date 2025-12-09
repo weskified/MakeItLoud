@@ -59,7 +59,7 @@
                 const processedBlob = await processMidiFile(file, normalize, volume);
                 const a = document.createElement("a");
                 a.href = URL.createObjectURL(processedBlob);
-                a.download = file.name.replace(/\.mid|\.midi/i, "") + "-loud.mid";
+                a.download = file.name.replace(/\.midi?$/i, "") + "-loud.mid";
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
