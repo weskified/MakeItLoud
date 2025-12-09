@@ -1,4 +1,4 @@
-import { Midi } from "@tonejs/midi";
+import { Midi } from "https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.27/build/Midi.js";
 
 function normalizeVelocities(tracks, targetVolume) {
     let velocities = [];
