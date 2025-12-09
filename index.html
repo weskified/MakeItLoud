@@ -2,7 +2,7 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <![endif]-->
 <html>
     <head>
         <meta charset="utf-8">
@@ -10,69 +10,83 @@
         <title>Make It Loud! MIDI Tool</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="./main.css">
+        <link rel="stylesheet" href="assets/main.css">
+        <link rel="stylesheet" href="assets/checkbox.css">
     </head>
     <body>
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-            <text style="font-size: 100px;">MAKE IT LOUD!</text><br>
-            <text style="font-size: 24px;">Drop any midi files here to <strong>make them louder!</strong></text>
+        <div id="bg" class="checkBg" style="position: fixed; top: 0; left: 0; --color1: #444; --color2: #333; width: 100%; height: 100%; z-index: -1; transition: transform 2s cubic-bezier(0.165, 0.840, 0.440, 1.000);"></div>
 
-            <br><br><br>
+        <div id="body" style="width: 100vw; height: 100vh; padding: 50px; line-height: 0px;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                
+            </div>
 
-            <text style="font-size: 20px;">Powered by <a href="https://github.com/Tonejs/Midi">@tonejs/midi</a>!</text>
-        </div>
-        
-        <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.27/build/Midi.js"></script>
-        <script>
-            const body = document.body;
+            <div style="position: fixed; bottom: 50px; display: flex; flex-direction: column; line-height: 30px;">
+                <text style="font-size: 70px; line-height: 50px;">Make it Loud! <z style="font-size: 40px;">Midi Tool</z></text> <!-- me when im lazy be like -->
+                <text style="font-size: 30px;">made with 💚 by <a href="https://github.com/weskified">wesk</a>! ...and with <a href="https://github.com/Tonejs/Midi">@tonejs/midi</a>!</text>
+            </div>
 
-            function log(msg) {
-                console.log(msg);
-            }
+            <div style="position: fixed; bottom: 50px; right: 50px; text-align: right; display: flex; flex-direction: column; line-height: 30px;">
+                <div style="margin-bottom: 5px;">
+                    <div style="display: grid; grid-template-columns: 1fr 205px; align-items: center; gap: 5px;">
+                        <text style="font-size: 30px; margin-bottom: 5px;">Volume</text>
+                        <div class="fancy-box" style="width: 200px;">
+                            <input style="font-family: 'DarumadropOne', sans-serif; font-size: 20px; width: 100%; box-sizing: border-box;" id="volume" type="number" value="200" min="100" max="500">
+                        </div>
 
-            ['dragenter','dragover','dragleave','drop'].forEach(event => {
-                document.addEventListener(event, e => e.preventDefault(), false);
-            });
-
-            body.addEventListener('drop', async e => {
-                const files = Array.from(e.dataTransfer.files);
-                const midiFiles = files.filter(file =>
-                    file.name.toLowerCase().endsWith('.mid') ||
-                    file.name.toLowerCase().endsWith('.midi')
-                );
-                if (midiFiles.length === 0) return;
-
-                for (const file of midiFiles) {
-                    try {
-                        const ab = await file.arrayBuffer();
-                        const midi = new Midi(ab);
-                        midi.tracks.forEach(track => {
-                            track.notes.forEach(note => {
-                                let newVel = note.velocity * 5;
-                                if (newVel > 1) newVel = 1;
-                                note.velocity = newVel;
+                        <script>
+                            const volumeInput = document.getElementById('volume');
+                            volumeInput.addEventListener('blur', (e) => {
+                                let value = parseInt(e.target.value) || 200;
+                                if (value > 500) value = 500;
+                                if (value < 100) value = 100;
+                                e.target.value = value;
                             });
-                        });
+                        </script>
+                    </div>
 
-                        const out = midi.toArray();
-                        const blob = new Blob([out], { type: 'audio/midi' });
-                        const url = URL.createObjectURL(blob);
+                    <div style="display: grid; grid-template-columns: 1fr 50px; align-items: center; gap: 5px;">
+                        <text style="font-size: 30px; margin-bottom: 5px;">Normalize Note Velocities</text>
+                        <w-checkbox id="normalize"></w-checkbox>
+                    </div>
+                </div>
+                <text style="font-size: 30px;">Drag and drop (multiple) files to make them louder!</text>
+            </div>
+        </div>
 
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = file.name.replace(/(\.mid|\.midi)$/i, '') + '_mil.mid';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    } catch (err) {
-                        console.error(err);
-                    }
-                }
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+        <script src="scripts/checkbox.js"></script>
+
+        <script type="module">
+            import { initMidiProcessor } from './scripts/midi.js';
+
+            const dropZone = document.body;
+
+            initMidiProcessor(dropZone, () => {
+                return {
+                    normalize: document.getElementById('normalize').checked,
+                    volume: parseInt(document.getElementById('volume').value) || 200
+                };
+            });
+        </script>
+
+        <script>
+            let mouseX, mouseY;
+            document.addEventListener("mousemove", e => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            
+                gsap.to("#body", {
+                    x: (mouseX / window.innerWidth - .9) * 20,
+                    y: (mouseY / window.innerHeight - .9) * 20,
+                    delay: 0,
+                    ease: "power2.out",
+                    overwrite: "auto"
+                });
             });
         </script>
     </body>

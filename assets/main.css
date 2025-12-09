@@ -1,0 +1,124 @@
+@font-face {
+    font-family: 'DarumadropOne';
+    src: url('./DarumadropOne.ttf') format('truetype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+/* me when i port content from my other projects */
+.checkBg {
+    position: relative;
+    background-color: gray;
+    overflow: hidden;
+}
+
+.checkBg::before {
+    content: "";
+    position: absolute;
+    top: -150%;
+    left: -150%;
+    width: 500%;
+    height: 500%;
+    background: conic-gradient(
+    var(--color1) 90deg,
+    var(--color2) 90deg 180deg,
+    var(--color1) 180deg 270deg,
+    var(--color2) 270deg
+    );
+    background-repeat: repeat;
+    background-size: 50px 50px;
+    transform: rotate(30deg) translate3d(0, 0, 0);
+    will-change: transform;
+    animation: slide 15s linear infinite;
+    backface-visibility: hidden;
+}
+
+@keyframes slide {
+    from {
+        transform: rotate(22deg) translate3d(0, 0, 0);
+    }
+    to {
+        transform: rotate(22deg) translate3d(300px, 0, 0);
+    }
+}
+
+.fancy-box {
+    position: relative;
+    height: 42px;
+    overflow: hidden;
+    padding: 0 8px;
+    background: 
+    url('./left.webp') left center no-repeat,
+    url('./right.webp') right center no-repeat;
+    background-size: auto 100%;
+    z-index: 0;
+}
+
+.fancy-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    background: url('./middle.webp') repeat-x center;
+    background-size: auto 100%;
+    z-index: -1;
+}
+
+.fancy-box input {
+    color: white;
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    text-align: right;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+#volume::-webkit-outer-spin-button,
+#volume::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#volume[type=number] {
+    -moz-appearance: textfield;
+}
+
+text {
+    font-family: 'DarumadropOne', sans-serif;
+    color: white;
+    font-size: 48px;
+}
+
+a {
+    color: #999;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+a:visited {
+    color: #777;
+}
+
+a:hover {
+    color: #bbb;
+}
